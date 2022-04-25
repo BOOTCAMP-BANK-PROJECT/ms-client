@@ -50,4 +50,4 @@ jobs:
           app-name: 'ms-client-1'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_6A8ED7F489DE4FD0AEC44B558467225B }}
-          package: app.jar'
+          package: 'app.jar'
