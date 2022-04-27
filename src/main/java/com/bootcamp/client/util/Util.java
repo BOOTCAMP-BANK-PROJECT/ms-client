@@ -1,12 +1,6 @@
 package com.bootcamp.client.util;
 
-import com.bootcamp.client.generalClient.dto.CreateGeneralClientDto;
-import com.bootcamp.client.generalClient.dto.UpdateGeneralClientDto;
-import com.bootcamp.client.generalClient.entity.GeneralClient;
-
-import java.math.BigDecimal;
 import java.util.Currency;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,51 +14,6 @@ public class Util {
             return false;
         }
         return false;
-    }
-
-    public static GeneralClient mapCreate(CreateGeneralClientDto o) {
-
-        GeneralClient p = new GeneralClient(
-                (String) null,
-                o.getDescription(),
-                o.getAbbreviation(),
-                o.getIsoCurrencyCode(),
-                new BigDecimal(0),
-                (short) 1,
-                new Date(),
-                o.getFk_insertionUser(),
-                o.getInsertionTerminal()
-        );
-
-        return p;
-    }
-
-    public static GeneralClient mapUpdate(GeneralClient p, UpdateGeneralClientDto o) {
-        return new GeneralClient(
-                o.getId(),
-                o.getDescription(),
-                o.getAbbreviation(),
-                p.getIsoCurrencyCode(),
-                o.getInteresRate(),
-                p.getRegistrationStatus(),
-                p.getInsertionDate(),
-                p.getFk_insertionUser(),
-                p.getInsertionTerminal()
-        );
-    }
-
-    public static GeneralClient mapDelete(GeneralClient p, String id) {
-        return new GeneralClient(
-                id,
-                p.getDescription(),
-                p.getAbbreviation(),
-                p.getIsoCurrencyCode(),
-                p.getInteresRate(),
-                (short) 0,
-                p.getInsertionDate(),
-                p.getFk_insertionUser(),
-                p.getInsertionTerminal()
-        );
     }
 
     public static void log(Class context_class, Level level, String message, Object[] params) {
