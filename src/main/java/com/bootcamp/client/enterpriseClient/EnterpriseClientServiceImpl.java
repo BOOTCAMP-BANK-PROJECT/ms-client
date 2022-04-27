@@ -14,9 +14,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.Arrays;
-import java.util.logging.Level;
-
 @Service
 @RequiredArgsConstructor
 public class EnterpriseClientServiceImpl implements EnterpriseClientService {
@@ -36,21 +33,42 @@ public class EnterpriseClientServiceImpl implements EnterpriseClientService {
     }
 
     @Override
+    public Mono<EnterpriseClient> getByRuc(String ruc) {
+        return repository.findByRuc(ruc);
+    }
+
+    @Override
     public Mono<EnterpriseClient> save(CreateEnterpriseClientDto o) {
 
-        o.getAccounts().forEach( acc -> {
-            if(!Util.isValidCurrency(acc.getAccountIsoCurrencyCode())){
-                throw new BadRequestException(
-                        "CURRENCY",
-                        "An error occurred while trying to create an item.",
-                        "["+acc.getAccountId()+"] "+acc.getAccountIsoCurrencyCode() + " is an invalid currency code.",
-                        getClass(),
-                        "save"
-                );
-            }
-        });
+        return repository.findByRuc(o.getRuc())
+                .map( p -> {
+                    throw new BadRequestException(
+                                "RUC",
+                                "[save] The RUC number "+o.getRuc()+ " is already in use.",
+                                "An error occurred while trying to create an item.",
+                                getClass(),
+                                "save"
+                        );
+                } )
+                .switchIfEmpty(Mono.defer(() -> {
 
-        return repository.save(modelMapper.reverseMapCreateWithDate(o));
+                    Util.verifyRuc(o.getRuc(), o.getRuc(), getClass(), "save.verifyRuc");
+
+                    o.getAccounts().forEach( acc -> Util.verifyCurrency(acc, getClass()));
+
+                    return repository.save(modelMapper.reverseMapCreateWithDate(o));
+
+                }))
+                .onErrorResume( e -> Mono.error(new BadRequestException(
+                        "ID",
+                        "An error occurred while trying to create an item.",
+                        e.getMessage(),
+                        getClass(),
+                        "save.onErrorResume"
+                )))
+                .cast(EnterpriseClient.class);
+
+
     }
 
     @Override

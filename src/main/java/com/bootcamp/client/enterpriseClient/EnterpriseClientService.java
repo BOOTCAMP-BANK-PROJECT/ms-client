@@ -14,6 +14,8 @@ public interface EnterpriseClientService {
 
     public Mono<EnterpriseClient> getById(String id);
 
+    public Mono<EnterpriseClient> getByRuc(String ruc);
+
     public Mono<EnterpriseClient> save(CreateEnterpriseClientDto o);
 
     public Mono<EnterpriseClient> addAccounts(CreateEnterpriseClientAccountDto o);

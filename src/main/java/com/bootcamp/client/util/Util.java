@@ -56,11 +56,35 @@ public class Util {
     }
 
     public static boolean verifyRuc(String ruc, String ruc_to_compare, Class context_class, String context) {
+
+        try {
+            Long.parseLong(ruc);
+
+        } catch (Exception e){
+            throw new BadRequestException(
+                    "RUC",
+                    "["+context+"] The RUC ("+ruc+ ") should be a number.",
+                    "An error occurred while trying to create an item.",
+                    context_class,
+                    context
+            );
+        }
+
+        if(ruc.length() != 11) {
+            throw new BadRequestException(
+                    "RUC",
+                    "["+context+"] The RUC number length ("+ruc.length()+ ") should be 11 digits.",
+                    "An error occurred while trying to create an item.",
+                    context_class,
+                    context
+            );
+        }
+
         if(!Objects.equals(ruc, ruc_to_compare)) {
             throw new BadRequestException(
                     "RUC",
                     "["+context+"] An item with the RUC " + ruc + " was not found. >> ",
-                    "",
+                    "An error occurred while trying to create an item.",
                     context_class,
                     context
             );

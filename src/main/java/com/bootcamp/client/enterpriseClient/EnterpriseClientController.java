@@ -24,6 +24,24 @@ public class EnterpriseClientController {
 
     public final EnterpriseClientServiceImpl service;
 
+    @GetMapping("/{id}")
+    public Mono<ResponseEntity<Mono<EnterpriseClient>>> getById(@PathVariable String id) {
+        return Mono.just(
+                ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(service.getById(id))
+        );
+    }
+
+    @GetMapping("/find")
+    public Mono<ResponseEntity<Mono<EnterpriseClient>>> getByRuc(@RequestParam(name="ruc") String ruc) {
+        return Mono.just(
+                ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(service.getByRuc(ruc))
+        );
+    }
+
     @GetMapping
     public Mono<ResponseEntity<Flux<EnterpriseClient>>> getAll() {
         return Mono.just(
