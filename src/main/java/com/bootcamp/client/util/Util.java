@@ -1,6 +1,11 @@
 package com.bootcamp.client.util;
 
+import com.bootcamp.client.generalClient.entity.GenericAccount;
+import com.bootcamp.client.util.handler.exceptions.BadRequestException;
+import reactor.core.publisher.Mono;
+
 import java.util.Currency;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -34,5 +39,33 @@ public class Util {
 
     public static void log(Class context_class, Level level, String message) {
         log(context_class, level, message, null);
+    }
+
+    public static GenericAccount verifyCurrency(GenericAccount acc, Class context_class) {
+        if(!Util.isValidCurrency(acc.getAccountIsoCurrencyCode())){
+            throw new BadRequestException(
+                    "CURRENCY",
+                    "["+acc.getAccountId()+"] "+acc.getAccountIsoCurrencyCode() + " is an invalid currency code.",
+                    "",
+                    context_class,
+                    "update"
+            );
+        }
+
+        return acc;
+    }
+
+    public static boolean verifyRuc(String ruc, String ruc_to_compare, Class context_class, String context) {
+        if(!Objects.equals(ruc, ruc_to_compare)) {
+            throw new BadRequestException(
+                    "RUC",
+                    "["+context+"] An item with the RUC " + ruc + " was not found. >> ",
+                    "",
+                    context_class,
+                    context
+            );
+        }
+
+        return true;
     }
 }

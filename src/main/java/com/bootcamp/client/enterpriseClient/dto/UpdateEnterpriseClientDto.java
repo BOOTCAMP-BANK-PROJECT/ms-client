@@ -11,7 +11,7 @@ public class UpdateEnterpriseClientDto {
 
     @Id
     private String id;
-    //private String ruc;
+    private String ruc;
     //private String companyName;
     private String legalResidence;
     private List<GenericAccount> accounts;

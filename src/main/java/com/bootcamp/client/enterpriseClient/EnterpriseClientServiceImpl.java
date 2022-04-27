@@ -1,5 +1,6 @@
 package com.bootcamp.client.enterpriseClient;
 
+import com.bootcamp.client.enterpriseClient.dto.CreateEnterpriseClientAccountDto;
 import com.bootcamp.client.enterpriseClient.dto.CreateEnterpriseClientDto;
 import com.bootcamp.client.enterpriseClient.dto.DeleteEnterpriseClientDto;
 import com.bootcamp.client.enterpriseClient.dto.UpdateEnterpriseClientDto;
@@ -53,23 +54,37 @@ public class EnterpriseClientServiceImpl implements EnterpriseClientService {
     }
 
     @Override
+    public Mono<EnterpriseClient> addAccounts(CreateEnterpriseClientAccountDto o) {
+
+        return repository.findById(o.getId())
+                .switchIfEmpty(Mono.error(new Exception("An item with the id " + o.getId() + " was not found. >> switchIfEmpty")))
+                .flatMap( p -> {
+
+                    Util.verifyRuc(o.getRuc(), p.getRuc(), getClass(),"addAccounts.flatMap");
+
+                    o.getAccounts().forEach( acc -> Util.verifyCurrency(acc, getClass()));
+
+                    return repository.save(modelMapper.reverseMapUpdateAddAccounts(p, o));
+                } )
+                .onErrorResume( e -> Mono.error(new BadRequestException(
+                        "ID",
+                        "An error occurred while trying to update an item.",
+                        e.getMessage(),
+                        getClass(),
+                        "update.onErrorResume"
+                )));
+    }
+
+    @Override
     public Mono<EnterpriseClient> update(UpdateEnterpriseClientDto o) {
 
         return repository.findById(o.getId())
                 .switchIfEmpty(Mono.error(new Exception("An item with the id " + o.getId() + " was not found. >> switchIfEmpty")))
                 .flatMap( p -> {
 
-                    o.getAccounts().forEach( acc -> {
-                        if(!Util.isValidCurrency(acc.getAccountIsoCurrencyCode())){
-                            throw new BadRequestException(
-                                    "CURRENCY",
-                                    "["+acc.getAccountId()+"] "+acc.getAccountIsoCurrencyCode() + " is an invalid currency code.",
-                                    "",
-                                    getClass(),
-                                    "update"
-                            );
-                        }
-                    });
+                    Util.verifyRuc(o.getRuc(), p.getRuc(), getClass(),"update.flatMap");
+
+                    o.getAccounts().forEach( acc -> Util.verifyCurrency(acc, getClass()));
 
                     return repository.save(modelMapper.reverseMapUpdate(p, o));
                 } )
@@ -89,12 +104,11 @@ public class EnterpriseClientServiceImpl implements EnterpriseClientService {
                 .switchIfEmpty(Mono.error(new Exception("An item with the id " + o.getId() + " was not found. >> switchIfEmpty")))
                 .flatMap( p -> {
 
-                    if(p.getRuc() == o.getRuc()) {
-                        return repository.save(modelMapper.reverseMapDelete(o));
-                    }
-                    else {
+                    if(p.getRuc() != o.getRuc()) {
                         return Mono.error(new Exception("An item with the RUC " + o.getRuc() + " was not found. >> onFlatMap"));
                     }
+
+                    return repository.save(modelMapper.reverseMapDelete(o));
 
                 } )
                 .onErrorResume( e -> Mono.error(new BadRequestException(

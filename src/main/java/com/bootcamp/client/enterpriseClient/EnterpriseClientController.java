@@ -1,5 +1,6 @@
 package com.bootcamp.client.enterpriseClient;
 
+import com.bootcamp.client.enterpriseClient.dto.CreateEnterpriseClientAccountDto;
 import com.bootcamp.client.enterpriseClient.dto.CreateEnterpriseClientDto;
 import com.bootcamp.client.enterpriseClient.dto.DeleteEnterpriseClientDto;
 import com.bootcamp.client.enterpriseClient.dto.UpdateEnterpriseClientDto;
@@ -23,7 +24,7 @@ public class EnterpriseClientController {
 
     public final EnterpriseClientServiceImpl service;
 
-    @GetMapping//(value = "/fully")
+    @GetMapping
     public Mono<ResponseEntity<Flux<EnterpriseClient>>> getAll() {
         return Mono.just(
                 ResponseEntity.ok()
@@ -40,6 +41,18 @@ public class EnterpriseClientController {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(p)
         );
+    }
+
+    @PostMapping(value = "/accounts")
+    public Mono<ResponseEntity<EnterpriseClient>> addAccounts(@RequestBody CreateEnterpriseClientAccountDto o) {
+
+        return service.addAccounts(o)
+                .map(p -> ResponseEntity.created(URI.create("/client/enterprise/"
+                                .concat(p.getId())
+                        ))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(p))
+                .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     @PutMapping

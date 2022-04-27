@@ -1,5 +1,6 @@
 package com.bootcamp.client.enterpriseClient;
 
+import com.bootcamp.client.enterpriseClient.dto.CreateEnterpriseClientAccountDto;
 import com.bootcamp.client.enterpriseClient.dto.CreateEnterpriseClientDto;
 import com.bootcamp.client.enterpriseClient.dto.DeleteEnterpriseClientDto;
 import com.bootcamp.client.enterpriseClient.dto.UpdateEnterpriseClientDto;
@@ -14,6 +15,8 @@ public interface EnterpriseClientService {
     public Mono<EnterpriseClient> getById(String id);
 
     public Mono<EnterpriseClient> save(CreateEnterpriseClientDto o);
+
+    public Mono<EnterpriseClient> addAccounts(CreateEnterpriseClientAccountDto o);
 
     public Mono<EnterpriseClient> update(UpdateEnterpriseClientDto o);
 

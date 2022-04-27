@@ -1,5 +1,6 @@
 package com.bootcamp.client.util.mapper;
 
+import com.bootcamp.client.enterpriseClient.dto.CreateEnterpriseClientAccountDto;
 import com.bootcamp.client.enterpriseClient.dto.CreateEnterpriseClientDto;
 import com.bootcamp.client.enterpriseClient.dto.DeleteEnterpriseClientDto;
 import com.bootcamp.client.enterpriseClient.dto.UpdateEnterpriseClientDto;
@@ -31,6 +32,14 @@ public class EnterpriseClientModelMapper {
         o.setRegistrationStatus((short) 1);
 
         return o;
+    }
+
+    public EnterpriseClient reverseMapUpdateAddAccounts(EnterpriseClient p, CreateEnterpriseClientAccountDto o) {
+
+        p.getAccounts().addAll(o.getAccounts());
+
+        return p;
+
     }
 
     public EnterpriseClient reverseMapUpdate(EnterpriseClient p, UpdateEnterpriseClientDto updateDto) {
