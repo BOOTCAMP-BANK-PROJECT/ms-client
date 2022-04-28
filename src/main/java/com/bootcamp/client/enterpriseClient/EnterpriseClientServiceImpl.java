@@ -122,11 +122,11 @@ public class EnterpriseClientServiceImpl implements EnterpriseClientService {
                 .switchIfEmpty(Mono.error(new Exception("An item with the id " + o.getId() + " was not found. >> switchIfEmpty")))
                 .flatMap( p -> {
 
-                    if(p.getRuc() != o.getRuc()) {
+                    if( !p.getRuc().equals(o.getRuc()) ) {
                         return Mono.error(new Exception("An item with the RUC " + o.getRuc() + " was not found. >> onFlatMap"));
                     }
 
-                    return repository.save(modelMapper.reverseMapDelete(o));
+                    return repository.save(modelMapper.reverseMapDelete(p, o));
 
                 } )
                 .onErrorResume( e -> Mono.error(new BadRequestException(

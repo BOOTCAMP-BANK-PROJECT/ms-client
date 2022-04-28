@@ -50,12 +50,11 @@ public class EnterpriseClientModelMapper {
         return p;
     }
 
-    public EnterpriseClient reverseMapDelete(DeleteEnterpriseClientDto deleteDto) {
-        EnterpriseClient o = mapper.map(deleteDto, EnterpriseClient.class);
+    public EnterpriseClient reverseMapDelete(EnterpriseClient p, DeleteEnterpriseClientDto deleteDto) {
 
-        o.setRegistrationStatus((short) 0);
+        p.setRegistrationStatus((short) 0);
 
-        return o;
+        return p;
     }
 
 }
