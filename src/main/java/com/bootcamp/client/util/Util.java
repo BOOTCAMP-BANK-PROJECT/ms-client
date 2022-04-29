@@ -1,8 +1,8 @@
 package com.bootcamp.client.util;
 
-import com.bootcamp.client.generalClient.entity.GenericAccount;
-import com.bootcamp.client.personalClient.entity.DocumentType;
-import com.bootcamp.client.personalClient.entity.PersonalDocument;
+import com.bootcamp.client.general.entity.GenericAccount;
+import com.bootcamp.client.personal.entity.DocumentType;
+import com.bootcamp.client.personal.entity.PersonalDocument;
 import com.bootcamp.client.util.handler.exceptions.BadRequestException;
 
 import java.util.Currency;

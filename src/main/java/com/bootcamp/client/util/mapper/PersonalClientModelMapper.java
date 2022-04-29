@@ -1,10 +1,10 @@
 package com.bootcamp.client.util.mapper;
 
-import com.bootcamp.client.personalClient.dto.CreatePersonalClientAccountDto;
-import com.bootcamp.client.personalClient.dto.CreatePersonalClientDto;
-import com.bootcamp.client.personalClient.dto.DeletePersonalClientDto;
-import com.bootcamp.client.personalClient.dto.UpdatePersonalClientDto;
-import com.bootcamp.client.personalClient.entity.PersonalClient;
+import com.bootcamp.client.personal.dto.CreatePersonalClientAccountDto;
+import com.bootcamp.client.personal.dto.CreatePersonalClientDto;
+import com.bootcamp.client.personal.dto.DeletePersonalClientDto;
+import com.bootcamp.client.personal.dto.UpdatePersonalClientDto;
+import com.bootcamp.client.personal.entity.PersonalClient;
 import org.modelmapper.ModelMapper;
 
 import java.util.Date;
