@@ -1,8 +1,9 @@
 package com.bootcamp.client.util;
 
 import com.bootcamp.client.generalClient.entity.GenericAccount;
+import com.bootcamp.client.personalClient.entity.DocumentType;
+import com.bootcamp.client.personalClient.entity.PersonalDocument;
 import com.bootcamp.client.util.handler.exceptions.BadRequestException;
-import reactor.core.publisher.Mono;
 
 import java.util.Currency;
 import java.util.Objects;
@@ -57,28 +58,9 @@ public class Util {
 
     public static boolean verifyRuc(String ruc, String ruc_to_compare, Class context_class, String context) {
 
-        try {
-            Long.parseLong(ruc);
+        Util.isNumber(ruc, "RUC", context_class, context);
 
-        } catch (Exception e){
-            throw new BadRequestException(
-                    "RUC",
-                    "["+context+"] The RUC ("+ruc+ ") should be a number.",
-                    "An error occurred while trying to create an item.",
-                    context_class,
-                    context
-            );
-        }
-
-        if(ruc.length() != 11) {
-            throw new BadRequestException(
-                    "RUC",
-                    "["+context+"] The RUC number length ("+ruc.length()+ ") should be 11 digits.",
-                    "An error occurred while trying to create an item.",
-                    context_class,
-                    context
-            );
-        }
+        Util.verifyLength(ruc, 11, "RUC", context_class, context);
 
         if(!Objects.equals(ruc, ruc_to_compare)) {
             throw new BadRequestException(
@@ -91,5 +73,67 @@ public class Util {
         }
 
         return true;
+    }
+
+    public static void verifyLength(String ruc, int length, String type, Class context_class, String context) {
+        if(ruc.length() != length) {
+            throw new BadRequestException(
+                    type.toUpperCase(),
+                    "["+context+"] The "+type+" length ("+ruc.length()+ ") should be "+length+" digits.",
+                    "An error occurred while trying to create an item.",
+                    context_class,
+                    context
+            );
+        }
+    }
+
+    public static void isNumber(String n, String type, Class context_class, String context) {
+        try {
+            Long.parseLong(n);
+
+        } catch (Exception e){
+            throw new BadRequestException(
+                    type.toUpperCase(),
+                    "["+context+"] The "+type+" ("+n+ ") should be a number.",
+                    "An error occurred while trying to create an item.",
+                    context_class,
+                    context
+            );
+        }
+    }
+
+    public static void verifyDocumentNumber(
+            String documentType,
+            String documentNumber,
+            Class context_class,
+            String context
+    ) {
+
+        DocumentType doc;
+
+        try {
+
+            doc = PersonalDocument.getInstance().getDocumentTypes().get(documentType);
+
+        } catch (Exception e) {
+            throw new BadRequestException(
+                    "DocumentType",
+                    "["+context+"] The document type <<"+documentType+ ">> is not valid.",
+                    "An error occurred while trying to create an item.",
+                    context_class,
+                    context
+            );
+        }
+
+        if(!((documentNumber.length() >= doc.getMinLength()) && (documentNumber.length() <= doc.getMaxLength()))) {
+            throw new BadRequestException(
+                    "DocumentNumber",
+                    "["+context+"] The document number length ("+documentNumber.length()+ ") should be between "+doc.getMinLength()+" and "+doc.getMaxLength()+" digits.",
+                    "An error occurred while trying to create an item.",
+                    context_class,
+                    context
+            );
+        }
+
     }
 }
