@@ -1,13 +1,16 @@
 package com.bootcamp.client.util.mapper;
 
-import com.bootcamp.client.enterprise.dto.CreateEnterpriseClientAccountDto;
-import com.bootcamp.client.enterprise.dto.CreateEnterpriseClientDto;
-import com.bootcamp.client.enterprise.dto.DeleteEnterpriseClientDto;
-import com.bootcamp.client.enterprise.dto.UpdateEnterpriseClientDto;
+import com.bootcamp.client.enterprise.dto.*;
 import com.bootcamp.client.enterprise.entity.EnterpriseClient;
+import com.bootcamp.client.general.entity.GenericAccount;
+import com.bootcamp.client.util.handler.exceptions.BadRequestException;
 import org.modelmapper.ModelMapper;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class EnterpriseClientModelMapper {
 
@@ -34,9 +37,75 @@ public class EnterpriseClientModelMapper {
         return o;
     }
 
-    public EnterpriseClient reverseMapUpdateAddAccounts(EnterpriseClient p, CreateEnterpriseClientAccountDto o) {
+    public EnterpriseClient reverseMapAddAccounts(EnterpriseClient p, CreateEnterpriseClientAccountDto o) {
 
-        p.getAccounts().addAll(o.getAccounts());
+        GenericAccount acc = mapper.map(o, GenericAccount.class);
+
+        acc.setAccountInsertionDate(new Date());
+        acc.setAccountRegistrationStatus((short) 1);
+
+        p.getAccounts().add(acc);
+
+        return p;
+
+    }
+
+    public EnterpriseClient reverseMapUpdateAccounts(EnterpriseClient p, UpdateEnterpriseClientAccountDto o) {
+
+        List<Integer> counter = new ArrayList<>();
+
+        p.setAccounts(
+                p.getAccounts().stream().map(a -> {
+                            if( a.getAccountId().equals(o.getAccountId()) ) {
+                                a.setAccountType(o.getAccountType());
+                                a.setAccountUrl(o.getAccountUrl());
+                                a.setAccountIsoCurrencyCode(o.getAccountIsoCurrencyCode());
+
+                                counter.add(1);
+                            }
+
+                            return a;
+                        })
+                        .collect(Collectors.toList())
+        );
+
+        if(counter.isEmpty()) throw new BadRequestException(
+                "ERROR",
+                "The account with id " + o.getAccountId() + " does not exist",
+                "An error occurred while trying to update an item.",
+                getClass(),
+                "update.onReverseMapping"
+        );
+
+        return p;
+
+    }
+
+    public EnterpriseClient reverseMapDeleteAccounts(EnterpriseClient p, String accountId) {
+
+        List<Integer> counter = new ArrayList<>();
+
+        p.setAccounts(
+                p.getAccounts().stream().map(a -> {
+                            if( a.getAccountId().equals(accountId) ) {
+                                counter.add(1);
+                                return null;
+                            }
+                            return a;
+                        })
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList())
+        );
+
+        if(counter.isEmpty()) {
+            throw new BadRequestException(
+                    "ERROR",
+                    "The account with id " + accountId + " does not exist",
+                    "An error occurred while trying to delete an item.",
+                    getClass(),
+                    "delete.onReverseMapping"
+            );
+        }
 
         return p;
 

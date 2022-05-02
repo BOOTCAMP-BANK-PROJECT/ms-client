@@ -1,11 +1,11 @@
 package com.bootcamp.client.enterprise;
 
-import com.bootcamp.client.enterprise.dto.CreateEnterpriseClientAccountDto;
-import com.bootcamp.client.enterprise.dto.CreateEnterpriseClientDto;
-import com.bootcamp.client.enterprise.dto.DeleteEnterpriseClientDto;
-import com.bootcamp.client.enterprise.dto.UpdateEnterpriseClientDto;
+import com.bootcamp.client.enterprise.dto.*;
 import com.bootcamp.client.enterprise.entity.EnterpriseClient;
 import com.bootcamp.client.enterprise.repository.EnterpriseClientRepository;
+import com.bootcamp.client.personal.dto.CreatePersonalClientAccountDto;
+import com.bootcamp.client.personal.dto.UpdatePersonalClientAccountDto;
+import com.bootcamp.client.personal.entity.PersonalClient;
 import com.bootcamp.client.util.Util;
 import com.bootcamp.client.util.handler.exceptions.BadRequestException;
 import com.bootcamp.client.util.mapper.EnterpriseClientModelMapper;
@@ -72,17 +72,15 @@ public class EnterpriseClientServiceImpl implements EnterpriseClientService {
     }
 
     @Override
-    public Mono<EnterpriseClient> addAccounts(CreateEnterpriseClientAccountDto o) {
+    public Mono<EnterpriseClient> addAccount(String ruc, CreateEnterpriseClientAccountDto o) {
 
-        return repository.findById(o.getId())
-                .switchIfEmpty(Mono.error(new Exception("An item with the id " + o.getId() + " was not found. >> switchIfEmpty")))
+        return repository.findByRuc(ruc)
+                .switchIfEmpty(Mono.error(new Exception("An item with the ruc " + ruc + " was not found. >> switchIfEmpty")))
                 .flatMap( p -> {
 
-                    Util.verifyRuc(o.getRuc(), p.getRuc(), getClass(),"addAccounts.flatMap");
+                    Util.verifyCurrency(o.getAccountIsoCurrencyCode(), getClass());
 
-                    o.getAccounts().forEach( acc -> Util.verifyCurrency(acc.getAccountIsoCurrencyCode(), getClass()));
-
-                    return repository.save(modelMapper.reverseMapUpdateAddAccounts(p, o));
+                    return repository.save(modelMapper.reverseMapAddAccounts(p, o));
                 } )
                 .onErrorResume( e -> Mono.error(new BadRequestException(
                         "ID",
@@ -90,6 +88,41 @@ public class EnterpriseClientServiceImpl implements EnterpriseClientService {
                         e.getMessage(),
                         getClass(),
                         "update.onErrorResume"
+                )));
+    }
+
+    @Override
+    public Mono<EnterpriseClient> updateAccount(String ruc, UpdateEnterpriseClientAccountDto o) {
+
+        return repository.findByRuc(ruc)
+                .switchIfEmpty(Mono.error(new Exception("An item with the ruc " + ruc + " was not found. >> switchIfEmpty")))
+                .flatMap( p -> {
+
+                    Util.verifyCurrency(o.getAccountIsoCurrencyCode(), getClass());
+
+                    return repository.save(modelMapper.reverseMapUpdateAccounts(p, o));
+                } )
+                .onErrorResume( e -> Mono.error(new BadRequestException(
+                        "ID",
+                        "An error occurred while trying to update an item.",
+                        e.getMessage(),
+                        getClass(),
+                        "update.onErrorResume"
+                )));
+    }
+
+    @Override
+    public Mono<EnterpriseClient> deleteAccount(String ruc, String accountId) {
+
+        return repository.findByRuc(ruc)
+                .switchIfEmpty(Mono.error(new Exception("An item with the ruc " + ruc + " was not found. >> switchIfEmpty")))
+                .flatMap( p -> repository.save(modelMapper.reverseMapDeleteAccounts(p, accountId)) )
+                .onErrorResume( e -> Mono.error(new BadRequestException(
+                        "ID",
+                        "An error occurred while trying to delete an item.",
+                        e.getMessage(),
+                        getClass(),
+                        "delete.onErrorResume"
                 )));
     }
 

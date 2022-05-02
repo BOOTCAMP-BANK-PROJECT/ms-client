@@ -52,7 +52,7 @@ public class PersonalClientModelMapper {
 
     public PersonalClient reverseMapUpdateAccounts(PersonalClient p, UpdatePersonalClientAccountDto o) {
 
-        List<Integer> counter = new ArrayList<Integer>();
+        List<Integer> counter = new ArrayList<>();
 
         p.setAccounts(
                 p.getAccounts().stream().map(a -> {
@@ -83,9 +83,8 @@ public class PersonalClientModelMapper {
 
     public PersonalClient reverseMapDeleteAccounts(PersonalClient p, String accountId) {
 
-        List<Integer> counter = new ArrayList<Integer>();
+        List<Integer> counter = new ArrayList<>();
 
-        System.out.println("miaw3");
         p.setAccounts(
                 p.getAccounts().stream().map(a -> {
                             if( a.getAccountId().equals(accountId) ) {
