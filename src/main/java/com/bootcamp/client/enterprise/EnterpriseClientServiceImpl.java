@@ -54,7 +54,7 @@ public class EnterpriseClientServiceImpl implements EnterpriseClientService {
 
                     Util.verifyRuc(o.getRuc(), o.getRuc(), getClass(), "save.verifyRuc");
 
-                    o.getAccounts().forEach( acc -> Util.verifyCurrency(acc, getClass()));
+                    o.getAccounts().forEach( acc -> Util.verifyCurrency(acc.getAccountIsoCurrencyCode(), getClass()));
 
                     return repository.save(modelMapper.reverseMapCreateWithDate(o));
 
@@ -80,7 +80,7 @@ public class EnterpriseClientServiceImpl implements EnterpriseClientService {
 
                     Util.verifyRuc(o.getRuc(), p.getRuc(), getClass(),"addAccounts.flatMap");
 
-                    o.getAccounts().forEach( acc -> Util.verifyCurrency(acc, getClass()));
+                    o.getAccounts().forEach( acc -> Util.verifyCurrency(acc.getAccountIsoCurrencyCode(), getClass()));
 
                     return repository.save(modelMapper.reverseMapUpdateAddAccounts(p, o));
                 } )
@@ -102,7 +102,7 @@ public class EnterpriseClientServiceImpl implements EnterpriseClientService {
 
                     Util.verifyRuc(o.getRuc(), p.getRuc(), getClass(),"update.flatMap");
 
-                    o.getAccounts().forEach( acc -> Util.verifyCurrency(acc, getClass()));
+                    o.getAccounts().forEach( acc -> Util.verifyCurrency(acc.getAccountIsoCurrencyCode(), getClass()));
 
                     return repository.save(modelMapper.reverseMapUpdate(p, o));
                 } )

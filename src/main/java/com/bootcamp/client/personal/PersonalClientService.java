@@ -1,9 +1,6 @@
 package com.bootcamp.client.personal;
 
-import com.bootcamp.client.personal.dto.CreatePersonalClientAccountDto;
-import com.bootcamp.client.personal.dto.CreatePersonalClientDto;
-import com.bootcamp.client.personal.dto.DeletePersonalClientDto;
-import com.bootcamp.client.personal.dto.UpdatePersonalClientDto;
+import com.bootcamp.client.personal.dto.*;
 import com.bootcamp.client.personal.entity.PersonalClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -18,7 +15,11 @@ public interface PersonalClientService {
 
     public Mono<PersonalClient> save(CreatePersonalClientDto o);
 
-    public Mono<PersonalClient> addAccounts(CreatePersonalClientAccountDto o);
+    public Mono<PersonalClient> addAccount(String document, CreatePersonalClientAccountDto o);
+
+    public Mono<PersonalClient> updateAccount(String document, UpdatePersonalClientAccountDto o);
+
+    public Mono<PersonalClient> deleteAccount(String document, String accountId);
 
     public Mono<PersonalClient> update(UpdatePersonalClientDto o);
 

@@ -20,6 +20,7 @@ public class GenericAccount {
     private String accountUrl;
     private String accountIsoCurrencyCode;
 
+    private short accountRegistrationStatus;
     private Date accountInsertionDate;
     private String accountFk_insertionUser;
     private String accountInsertionTerminal;

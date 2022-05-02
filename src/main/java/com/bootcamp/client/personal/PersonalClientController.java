@@ -1,9 +1,6 @@
 package com.bootcamp.client.personal;
 
-import com.bootcamp.client.personal.dto.CreatePersonalClientAccountDto;
-import com.bootcamp.client.personal.dto.CreatePersonalClientDto;
-import com.bootcamp.client.personal.dto.DeletePersonalClientDto;
-import com.bootcamp.client.personal.dto.UpdatePersonalClientDto;
+import com.bootcamp.client.personal.dto.*;
 import com.bootcamp.client.personal.entity.PersonalClient;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -24,21 +21,12 @@ public class PersonalClientController {
 
     public final PersonalClientServiceImpl service;
 
-    @GetMapping("/{id}")
-    public Mono<ResponseEntity<Mono<PersonalClient>>> getById(@PathVariable String id) {
+    @GetMapping("/{documentNumber}")
+    public Mono<ResponseEntity<Mono<PersonalClient>>> getByDocumentNumber(@PathVariable String documentNumber) {
         return Mono.just(
                 ResponseEntity.ok()
                         .contentType(MediaType.APPLICATION_JSON)
-                        .body(service.getById(id))
-        );
-    }
-
-    @GetMapping("/find")
-    public Mono<ResponseEntity<Mono<PersonalClient>>> getByRuc(@RequestParam(name="documentNumber") String ruc) {
-        return Mono.just(
-                ResponseEntity.ok()
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(service.getByDocumentNumber(ruc))
+                        .body(service.getByDocumentNumber(documentNumber))
         );
     }
 
@@ -61,12 +49,36 @@ public class PersonalClientController {
         );
     }
 
-    @PostMapping(value = "/accounts")
-    public Mono<ResponseEntity<PersonalClient>> addAccounts(@RequestBody CreatePersonalClientAccountDto o) {
+    @PostMapping(value = "/{documentNumber}/accounts")
+    public Mono<ResponseEntity<PersonalClient>> addAccounts(@PathVariable String documentNumber, @RequestBody CreatePersonalClientAccountDto o) {
 
-        return service.addAccounts(o)
+        return service.addAccount(documentNumber, o)
                 .map(p -> ResponseEntity.created(URI.create("/client/personal/"
-                                .concat(p.getId())
+                                .concat(documentNumber)
+                        ))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(p))
+                .defaultIfEmpty(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping(value = "/{documentNumber}/accounts")
+    public Mono<ResponseEntity<PersonalClient>> updateAccounts(@PathVariable String documentNumber, @RequestBody UpdatePersonalClientAccountDto o) {
+
+        return service.updateAccount(documentNumber, o)
+                .map(p -> ResponseEntity.created(URI.create("/client/personal/"
+                                .concat(documentNumber)
+                        ))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(p))
+                .defaultIfEmpty(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping(value = "/{documentNumber}/accounts/{accountId}")
+    public Mono<ResponseEntity<PersonalClient>> deleteAccounts(@PathVariable String documentNumber, @PathVariable String accountId) {
+
+        return service.deleteAccount(documentNumber, accountId)
+                .map(p -> ResponseEntity.created(URI.create("/client/personal/"
+                                .concat(documentNumber)
                         ))
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(p))

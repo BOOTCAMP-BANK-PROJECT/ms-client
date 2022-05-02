@@ -1,9 +1,6 @@
 package com.bootcamp.client.personal;
 
-import com.bootcamp.client.personal.dto.CreatePersonalClientAccountDto;
-import com.bootcamp.client.personal.dto.CreatePersonalClientDto;
-import com.bootcamp.client.personal.dto.DeletePersonalClientDto;
-import com.bootcamp.client.personal.dto.UpdatePersonalClientDto;
+import com.bootcamp.client.personal.dto.*;
 import com.bootcamp.client.personal.entity.PersonalClient;
 import com.bootcamp.client.personal.repository.PersonalClientRepository;
 import com.bootcamp.client.util.Util;
@@ -61,7 +58,7 @@ public class PersonalClientServiceImpl implements PersonalClientService {
                             "save"
                     );
 
-                    o.getAccounts().forEach( acc -> Util.verifyCurrency(acc, getClass()));
+                    o.getAccounts().forEach( acc -> Util.verifyCurrency(acc.getAccountIsoCurrencyCode(), getClass()));
 
                     return repository.save(modelMapper.reverseMapCreateWithDate(o));
 
@@ -79,15 +76,15 @@ public class PersonalClientServiceImpl implements PersonalClientService {
     }
 
     @Override
-    public Mono<PersonalClient> addAccounts(CreatePersonalClientAccountDto o) {
+    public Mono<PersonalClient> addAccount(String documentNumber, CreatePersonalClientAccountDto o) {
 
-        return repository.findByDocumentNumber(o.getDocumentNumber())
-                .switchIfEmpty(Mono.error(new Exception("An item with the document number " + o.getDocumentNumber() + " was not found. >> switchIfEmpty")))
+        return repository.findByDocumentNumber(documentNumber)
+                .switchIfEmpty(Mono.error(new Exception("An item with the document number " + documentNumber + " was not found. >> switchIfEmpty")))
                 .flatMap( p -> {
 
-                    o.getAccounts().forEach( acc -> Util.verifyCurrency(acc, getClass()));
+                    Util.verifyCurrency(o.getAccountIsoCurrencyCode(), getClass());
 
-                    return repository.save(modelMapper.reverseMapUpdateAddAccounts(p, o));
+                    return repository.save(modelMapper.reverseMapAddAccounts(p, o));
                 } )
                 .onErrorResume( e -> Mono.error(new BadRequestException(
                         "ID",
@@ -95,6 +92,41 @@ public class PersonalClientServiceImpl implements PersonalClientService {
                         e.getMessage(),
                         getClass(),
                         "update.onErrorResume"
+                )));
+    }
+
+    @Override
+    public Mono<PersonalClient> updateAccount(String documentNumber, UpdatePersonalClientAccountDto o) {
+
+        return repository.findByDocumentNumber(documentNumber)
+                .switchIfEmpty(Mono.error(new Exception("An item with the document number " + documentNumber + " was not found. >> switchIfEmpty")))
+                .flatMap( p -> {
+
+                    Util.verifyCurrency(o.getAccountIsoCurrencyCode(), getClass());
+
+                    return repository.save(modelMapper.reverseMapUpdateAccounts(p, o));
+                } )
+                .onErrorResume( e -> Mono.error(new BadRequestException(
+                        "ID",
+                        "An error occurred while trying to update an item.",
+                        e.getMessage(),
+                        getClass(),
+                        "update.onErrorResume"
+                )));
+    }
+
+    @Override
+    public Mono<PersonalClient> deleteAccount(String documentNumber, String accountId) {
+
+        return repository.findByDocumentNumber(documentNumber)
+                .switchIfEmpty(Mono.error(new Exception("An item with the document number " + documentNumber + " was not found. >> switchIfEmpty")))
+                .flatMap( p -> repository.save(modelMapper.reverseMapDeleteAccounts(p, accountId)) )
+                .onErrorResume( e -> Mono.error(new BadRequestException(
+                        "ID",
+                        "An error occurred while trying to delete an item.",
+                        e.getMessage(),
+                        getClass(),
+                        "delete.onErrorResume"
                 )));
     }
 

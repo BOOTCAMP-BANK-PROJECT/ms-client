@@ -42,18 +42,16 @@ public class Util {
         log(context_class, level, message, null);
     }
 
-    public static GenericAccount verifyCurrency(GenericAccount acc, Class context_class) {
-        if(!Util.isValidCurrency(acc.getAccountIsoCurrencyCode())){
+    public static void verifyCurrency(String currencyCode, Class context_class) {
+        if(!Util.isValidCurrency(currencyCode)){
             throw new BadRequestException(
                     "CURRENCY",
-                    "["+acc.getAccountId()+"] "+acc.getAccountIsoCurrencyCode() + " is an invalid currency code.",
+                    "[CURRENCY] "+currencyCode + " is an invalid currency code.",
                     "",
                     context_class,
                     "update"
             );
         }
-
-        return acc;
     }
 
     public static boolean verifyRuc(String ruc, String ruc_to_compare, Class context_class, String context) {
