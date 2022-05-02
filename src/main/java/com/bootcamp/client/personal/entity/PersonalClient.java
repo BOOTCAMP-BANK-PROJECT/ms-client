@@ -25,6 +25,7 @@ public class PersonalClient {
     private String lastName;
     private String residenceAddress;
     private List<GenericAccount> accounts;
+    private String profile;
 
     private short registrationStatus;
     private Date insertionDate;

@@ -113,6 +113,7 @@ public class PersonalClientModelMapper {
 
     public PersonalClient reverseMapUpdate(PersonalClient p, UpdatePersonalClientDto updateDto) {
 
+        p.setProfile(updateDto.getProfile());
         p.setFirstName(updateDto.getFirstName());
         p.setLastName(updateDto.getLastName());
         p.setResidenceAddress(updateDto.getResidenceAddress());

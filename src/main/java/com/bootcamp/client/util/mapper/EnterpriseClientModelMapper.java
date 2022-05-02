@@ -113,6 +113,7 @@ public class EnterpriseClientModelMapper {
 
     public EnterpriseClient reverseMapUpdate(EnterpriseClient p, UpdateEnterpriseClientDto updateDto) {
 
+        p.setProfile(updateDto.getProfile());
         p.setAccounts(updateDto.getAccounts());
         p.setLegalResidence(updateDto.getLegalResidence());
 

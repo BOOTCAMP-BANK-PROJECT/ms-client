@@ -1,5 +1,6 @@
 package com.bootcamp.client.util;
 
+import com.bootcamp.client.enterprise.EnterpriseClientServiceImpl;
 import com.bootcamp.client.general.entity.GenericAccount;
 import com.bootcamp.client.personal.entity.DocumentType;
 import com.bootcamp.client.personal.entity.PersonalDocument;
@@ -112,6 +113,7 @@ public class Util {
         try {
 
             doc = PersonalDocument.getInstance().getDocumentTypes().get(documentType);
+            if(doc == null) throw new Exception("DocumentType is not valid");
 
         } catch (Exception e) {
             throw new BadRequestException(
@@ -134,4 +136,5 @@ public class Util {
         }
 
     }
+
 }

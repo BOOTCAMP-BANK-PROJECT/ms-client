@@ -2,9 +2,8 @@ package com.bootcamp.client.enterprise;
 
 import com.bootcamp.client.enterprise.dto.*;
 import com.bootcamp.client.enterprise.entity.EnterpriseClient;
-import com.bootcamp.client.personal.dto.CreatePersonalClientAccountDto;
-import com.bootcamp.client.personal.dto.UpdatePersonalClientAccountDto;
-import com.bootcamp.client.personal.entity.PersonalClient;
+import com.bootcamp.client.general.entity.ClientProfiles;
+import com.google.gson.Gson;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -33,12 +32,12 @@ public class EnterpriseClientController {
         );
     }
 
-    @GetMapping("/find")
-    public Mono<ResponseEntity<Mono<EnterpriseClient>>> getById(@RequestParam(name="id") String id) {
+    @GetMapping("/profiles")
+    public Mono<ResponseEntity<Mono<String>>> getProfiles() {
         return Mono.just(
                 ResponseEntity.ok()
                         .contentType(MediaType.APPLICATION_JSON)
-                        .body(service.getById(id))
+                        .body(Mono.just(new Gson().toJson(ClientProfiles.getEnterpriseProfiles())))
         );
     }
 

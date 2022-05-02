@@ -15,6 +15,7 @@ public class UpdateEnterpriseClientDto {
     //private String companyName;
     private String legalResidence;
     private List<GenericAccount> accounts;
+    private String profile;
 
     /*private Date insertionDate;
     private String fk_insertionUser;

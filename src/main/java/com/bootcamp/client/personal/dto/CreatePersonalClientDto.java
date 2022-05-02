@@ -17,6 +17,7 @@ public class CreatePersonalClientDto {
     private String lastName;
     private String residenceAddress;
     private List<GenericAccount> accounts;
+    private String profile;
 
     //private short registrationStatus;
     //private Date insertionDate;

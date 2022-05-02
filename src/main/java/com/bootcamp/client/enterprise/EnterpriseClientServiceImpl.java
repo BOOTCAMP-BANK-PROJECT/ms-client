@@ -3,9 +3,7 @@ package com.bootcamp.client.enterprise;
 import com.bootcamp.client.enterprise.dto.*;
 import com.bootcamp.client.enterprise.entity.EnterpriseClient;
 import com.bootcamp.client.enterprise.repository.EnterpriseClientRepository;
-import com.bootcamp.client.personal.dto.CreatePersonalClientAccountDto;
-import com.bootcamp.client.personal.dto.UpdatePersonalClientAccountDto;
-import com.bootcamp.client.personal.entity.PersonalClient;
+import com.bootcamp.client.general.entity.ClientProfiles;
 import com.bootcamp.client.util.Util;
 import com.bootcamp.client.util.handler.exceptions.BadRequestException;
 import com.bootcamp.client.util.mapper.EnterpriseClientModelMapper;
@@ -53,6 +51,7 @@ public class EnterpriseClientServiceImpl implements EnterpriseClientService {
                 .switchIfEmpty(Mono.defer(() -> {
 
                     Util.verifyRuc(o.getRuc(), o.getRuc(), getClass(), "save.verifyRuc");
+                    ClientProfiles.verifyEnterpriseProfiles(o.getProfile(), getClass(), "save.verifyProfile");
 
                     o.getAccounts().forEach( acc -> Util.verifyCurrency(acc.getAccountIsoCurrencyCode(), getClass()));
 
@@ -134,6 +133,7 @@ public class EnterpriseClientServiceImpl implements EnterpriseClientService {
                 .flatMap( p -> {
 
                     Util.verifyRuc(o.getRuc(), p.getRuc(), getClass(),"update.flatMap");
+                    ClientProfiles.verifyEnterpriseProfiles(o.getProfile(), getClass(), "update.verifyProfile");
 
                     o.getAccounts().forEach( acc -> Util.verifyCurrency(acc.getAccountIsoCurrencyCode(), getClass()));
 

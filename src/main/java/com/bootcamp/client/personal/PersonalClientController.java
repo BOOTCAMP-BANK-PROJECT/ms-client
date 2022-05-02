@@ -1,7 +1,9 @@
 package com.bootcamp.client.personal;
 
+import com.bootcamp.client.general.entity.ClientProfiles;
 import com.bootcamp.client.personal.dto.*;
 import com.bootcamp.client.personal.entity.PersonalClient;
+import com.google.gson.Gson;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -36,6 +38,15 @@ public class PersonalClientController {
                 ResponseEntity.ok()
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(service.getAll())
+        );
+    }
+
+    @GetMapping("/profiles")
+    public Mono<ResponseEntity<Mono<String>>> getProfiles() {
+        return Mono.just(
+                ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(Mono.just(new Gson().toJson(ClientProfiles.getPersonalProfiles())))
         );
     }
 

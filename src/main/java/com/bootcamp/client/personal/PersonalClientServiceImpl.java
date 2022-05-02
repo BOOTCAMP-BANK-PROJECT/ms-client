@@ -1,5 +1,6 @@
 package com.bootcamp.client.personal;
 
+import com.bootcamp.client.general.entity.ClientProfiles;
 import com.bootcamp.client.personal.dto.*;
 import com.bootcamp.client.personal.entity.PersonalClient;
 import com.bootcamp.client.personal.repository.PersonalClientRepository;
@@ -57,6 +58,8 @@ public class PersonalClientServiceImpl implements PersonalClientService {
                             getClass(),
                             "save"
                     );
+
+                    ClientProfiles.verifyPersonalProfiles(o.getProfile(), getClass(), "create.verifyProfile");
 
                     o.getAccounts().forEach( acc -> Util.verifyCurrency(acc.getAccountIsoCurrencyCode(), getClass()));
 
@@ -135,7 +138,12 @@ public class PersonalClientServiceImpl implements PersonalClientService {
 
         return repository.findByDocumentNumber(o.getDocumentNumber())
                 .switchIfEmpty(Mono.error(new Exception("An item with the document number " + o.getDocumentNumber() + " was not found. >> switchIfEmpty")))
-                .flatMap( p -> repository.save(modelMapper.reverseMapUpdate(p, o)) )
+                .flatMap( p -> {
+
+                    ClientProfiles.verifyPersonalProfiles(o.getProfile(), getClass(), "update.verifyProfile");
+
+                    return repository.save(modelMapper.reverseMapUpdate(p, o));
+                } )
                 .onErrorResume( e -> Mono.error(new BadRequestException(
                         "ID",
                         "An error occurred while trying to update an item.",

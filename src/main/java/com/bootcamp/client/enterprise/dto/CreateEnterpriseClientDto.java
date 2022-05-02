@@ -13,6 +13,7 @@ public class CreateEnterpriseClientDto {
     private String companyName;
     private String legalResidence;
     private List<GenericAccount> accounts;
+    private String profile;
 
     //private short registrationStatus;
     //private Date insertionDate;
