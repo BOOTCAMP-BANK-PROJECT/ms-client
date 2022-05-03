@@ -1,12 +1,13 @@
-package com.bootcamp.client.personal;
+package com.bootcamp.client.enterprise.service.impl;
 
+import com.bootcamp.client.enterprise.dto.*;
+import com.bootcamp.client.enterprise.entity.EnterpriseClient;
+import com.bootcamp.client.enterprise.repository.EnterpriseClientRepository;
+import com.bootcamp.client.enterprise.service.EnterpriseClientService;
 import com.bootcamp.client.general.entity.ClientProfiles;
-import com.bootcamp.client.personal.dto.*;
-import com.bootcamp.client.personal.entity.PersonalClient;
-import com.bootcamp.client.personal.repository.PersonalClientRepository;
 import com.bootcamp.client.util.Util;
 import com.bootcamp.client.util.handler.exceptions.BadRequestException;
-import com.bootcamp.client.util.mapper.PersonalClientModelMapper;
+import com.bootcamp.client.util.mapper.EnterpriseClientModelMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -14,52 +15,44 @@ import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
-public class PersonalClientServiceImpl implements PersonalClientService {
+public class EnterpriseClientServiceImpl implements EnterpriseClientService {
 
-    static PersonalClientModelMapper modelMapper = PersonalClientModelMapper.singleInstance();
+    static EnterpriseClientModelMapper modelMapper = EnterpriseClientModelMapper.singleInstance();
 
-    public final PersonalClientRepository repository;
+    public final EnterpriseClientRepository repository;
 
     @Override
-    public Flux<PersonalClient> getAll() {
+    public Flux<EnterpriseClient> getAll() {
         return repository.findAll();
     }
 
     @Override
-    public Mono<PersonalClient> getById(String id) {
+    public Mono<EnterpriseClient> getById(String id) {
         return repository.findById(id);
     }
 
     @Override
-    public Mono<PersonalClient> getByDocumentNumber(String documentNumber) {
-        return repository.findByDocumentNumber(documentNumber);
+    public Mono<EnterpriseClient> getByRuc(String ruc) {
+        return repository.findByRuc(ruc);
     }
 
     @Override
-    public Mono<PersonalClient> save(CreatePersonalClientDto o) {
+    public Mono<EnterpriseClient> save(CreateEnterpriseClientDto o) {
 
-        return repository.findByDocumentNumber(o.getDocumentNumber())
+        return repository.findByRuc(o.getRuc())
                 .map( p -> {
                     throw new BadRequestException(
-                            "DocumentNumber",
-                            "[save] The document number "+o.getDocumentNumber()+ " is already in use.",
-                            "An error occurred while trying to create an item.",
-                            getClass(),
-                            "save"
-                    );
+                                "RUC",
+                                "[save] The RUC number "+o.getRuc()+ " is already in use.",
+                                "An error occurred while trying to create an item.",
+                                getClass(),
+                                "save"
+                        );
                 } )
                 .switchIfEmpty(Mono.defer(() -> {
 
-                    Util.isNumber(o.getDocumentNumber(), "DocumentNumber", getClass(), "save");
-
-                    Util.verifyDocumentNumber(
-                            o.getDocumentType(),
-                            o.getDocumentNumber(),
-                            getClass(),
-                            "save"
-                    );
-
-                    ClientProfiles.verifyPersonalProfiles(o.getProfile(), getClass(), "create.verifyProfile");
+                    Util.verifyRuc(o.getRuc(), o.getRuc(), getClass(), "save.verifyRuc");
+                    ClientProfiles.verifyEnterpriseProfiles(o.getProfile(), getClass(), "save.verifyProfile");
 
                     o.getAccounts().forEach( acc -> Util.verifyCurrency(acc.getAccountIsoCurrencyCode(), getClass()));
 
@@ -67,22 +60,22 @@ public class PersonalClientServiceImpl implements PersonalClientService {
 
                 }))
                 .onErrorResume( e -> Mono.error(new BadRequestException(
-                        "ERROR",
+                        "ID",
                         "An error occurred while trying to create an item.",
                         e.getMessage(),
                         getClass(),
                         "save.onErrorResume"
                 )))
-                .cast(PersonalClient.class);
+                .cast(EnterpriseClient.class);
 
 
     }
 
     @Override
-    public Mono<PersonalClient> addAccount(String documentNumber, CreatePersonalClientAccountDto o) {
+    public Mono<EnterpriseClient> addAccount(String ruc, CreateEnterpriseClientAccountDto o) {
 
-        return repository.findByDocumentNumber(documentNumber)
-                .switchIfEmpty(Mono.error(new Exception("An item with the document number " + documentNumber + " was not found. >> switchIfEmpty")))
+        return repository.findByRuc(ruc)
+                .switchIfEmpty(Mono.error(new Exception("An item with the ruc " + ruc + " was not found. >> switchIfEmpty")))
                 .flatMap( p -> {
 
                     Util.verifyCurrency(o.getAccountIsoCurrencyCode(), getClass());
@@ -99,10 +92,10 @@ public class PersonalClientServiceImpl implements PersonalClientService {
     }
 
     @Override
-    public Mono<PersonalClient> updateAccount(String documentNumber, UpdatePersonalClientAccountDto o) {
+    public Mono<EnterpriseClient> updateAccount(String ruc, UpdateEnterpriseClientAccountDto o) {
 
-        return repository.findByDocumentNumber(documentNumber)
-                .switchIfEmpty(Mono.error(new Exception("An item with the document number " + documentNumber + " was not found. >> switchIfEmpty")))
+        return repository.findByRuc(ruc)
+                .switchIfEmpty(Mono.error(new Exception("An item with the ruc " + ruc + " was not found. >> switchIfEmpty")))
                 .flatMap( p -> {
 
                     Util.verifyCurrency(o.getAccountIsoCurrencyCode(), getClass());
@@ -119,10 +112,10 @@ public class PersonalClientServiceImpl implements PersonalClientService {
     }
 
     @Override
-    public Mono<PersonalClient> deleteAccount(String documentNumber, String accountId) {
+    public Mono<EnterpriseClient> deleteAccount(String ruc, String accountId) {
 
-        return repository.findByDocumentNumber(documentNumber)
-                .switchIfEmpty(Mono.error(new Exception("An item with the document number " + documentNumber + " was not found. >> switchIfEmpty")))
+        return repository.findByRuc(ruc)
+                .switchIfEmpty(Mono.error(new Exception("An item with the ruc " + ruc + " was not found. >> switchIfEmpty")))
                 .flatMap( p -> repository.save(modelMapper.reverseMapDeleteAccounts(p, accountId)) )
                 .onErrorResume( e -> Mono.error(new BadRequestException(
                         "ID",
@@ -134,13 +127,16 @@ public class PersonalClientServiceImpl implements PersonalClientService {
     }
 
     @Override
-    public Mono<PersonalClient> update(UpdatePersonalClientDto o) {
+    public Mono<EnterpriseClient> update(UpdateEnterpriseClientDto o) {
 
-        return repository.findByDocumentNumber(o.getDocumentNumber())
-                .switchIfEmpty(Mono.error(new Exception("An item with the document number " + o.getDocumentNumber() + " was not found. >> switchIfEmpty")))
+        return repository.findById(o.getId())
+                .switchIfEmpty(Mono.error(new Exception("An item with the id " + o.getId() + " was not found. >> switchIfEmpty")))
                 .flatMap( p -> {
 
-                    ClientProfiles.verifyPersonalProfiles(o.getProfile(), getClass(), "update.verifyProfile");
+                    Util.verifyRuc(o.getRuc(), p.getRuc(), getClass(),"update.flatMap");
+                    ClientProfiles.verifyEnterpriseProfiles(o.getProfile(), getClass(), "update.verifyProfile");
+
+                    o.getAccounts().forEach( acc -> Util.verifyCurrency(acc.getAccountIsoCurrencyCode(), getClass()));
 
                     return repository.save(modelMapper.reverseMapUpdate(p, o));
                 } )
@@ -154,11 +150,19 @@ public class PersonalClientServiceImpl implements PersonalClientService {
     }
 
     @Override
-    public Mono<PersonalClient> delete(DeletePersonalClientDto o) {
+    public Mono<EnterpriseClient> delete(DeleteEnterpriseClientDto o) {
 
-        return repository.findByDocumentNumber(o.getDocumentNumber())
-                .switchIfEmpty(Mono.error(new Exception("An item with the document number " + o.getDocumentNumber() + " was not found. >> switchIfEmpty")))
-                .flatMap( p -> repository.save(modelMapper.reverseMapDelete(p, o)))
+        return repository.findById(o.getId())
+                .switchIfEmpty(Mono.error(new Exception("An item with the id " + o.getId() + " was not found. >> switchIfEmpty")))
+                .flatMap( p -> {
+
+                    if( !p.getRuc().equals(o.getRuc()) ) {
+                        return Mono.error(new Exception("An item with the RUC " + o.getRuc() + " was not found. >> onFlatMap"));
+                    }
+
+                    return repository.save(modelMapper.reverseMapDelete(p, o));
+
+                } )
                 .onErrorResume( e -> Mono.error(new BadRequestException(
                         "ID",
                         "An error occurred while trying to delete an item.",

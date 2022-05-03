@@ -1,7 +1,5 @@
 package com.bootcamp.client.util;
 
-import com.bootcamp.client.enterprise.EnterpriseClientServiceImpl;
-import com.bootcamp.client.general.entity.GenericAccount;
 import com.bootcamp.client.personal.entity.DocumentType;
 import com.bootcamp.client.personal.entity.PersonalDocument;
 import com.bootcamp.client.util.handler.exceptions.BadRequestException;

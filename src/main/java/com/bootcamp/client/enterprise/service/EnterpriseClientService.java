@@ -1,4 +1,4 @@
-package com.bootcamp.client.enterprise;
+package com.bootcamp.client.enterprise.service;
 
 import com.bootcamp.client.enterprise.dto.*;
 import com.bootcamp.client.enterprise.entity.EnterpriseClient;

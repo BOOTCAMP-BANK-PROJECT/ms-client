@@ -1,5 +1,6 @@
-package com.bootcamp.client.enterprise;
+package com.bootcamp.client.enterprise.controller;
 
+import com.bootcamp.client.enterprise.service.impl.EnterpriseClientServiceImpl;
 import com.bootcamp.client.enterprise.dto.*;
 import com.bootcamp.client.enterprise.entity.EnterpriseClient;
 import com.bootcamp.client.general.entity.ClientProfiles;
@@ -29,6 +30,15 @@ public class EnterpriseClientController {
                 ResponseEntity.ok()
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(service.getByRuc(ruc))
+        );
+    }
+
+    @GetMapping("/find/{id}")
+    public Mono<ResponseEntity<Mono<EnterpriseClient>>> getById(@PathVariable String id) {
+        return Mono.just(
+                ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(service.getById(id))
         );
     }
 

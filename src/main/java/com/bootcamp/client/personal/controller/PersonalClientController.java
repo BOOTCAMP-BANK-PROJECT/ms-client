@@ -1,6 +1,7 @@
-package com.bootcamp.client.personal;
+package com.bootcamp.client.personal.controller;
 
 import com.bootcamp.client.general.entity.ClientProfiles;
+import com.bootcamp.client.personal.service.impl.PersonalClientServiceImpl;
 import com.bootcamp.client.personal.dto.*;
 import com.bootcamp.client.personal.entity.PersonalClient;
 import com.google.gson.Gson;
@@ -29,6 +30,15 @@ public class PersonalClientController {
                 ResponseEntity.ok()
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(service.getByDocumentNumber(documentNumber))
+        );
+    }
+
+    @GetMapping("/find/{id}")
+    public Mono<ResponseEntity<Mono<PersonalClient>>> getById(@PathVariable String id) {
+        return Mono.just(
+                ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(service.getById(id))
         );
     }
 

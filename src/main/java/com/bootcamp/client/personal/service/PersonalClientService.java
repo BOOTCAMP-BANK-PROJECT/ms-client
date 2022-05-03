@@ -1,4 +1,4 @@
-package com.bootcamp.client.personal;
+package com.bootcamp.client.personal.service;
 
 import com.bootcamp.client.personal.dto.*;
 import com.bootcamp.client.personal.entity.PersonalClient;
