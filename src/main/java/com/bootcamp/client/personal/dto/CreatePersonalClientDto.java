@@ -1,6 +1,6 @@
 package com.bootcamp.client.personal.dto;
 
-import com.bootcamp.client.general.entity.GenericAccount;
+import com.bootcamp.client.general.entity.GenericProduct;
 import lombok.Data;
 
 import java.util.List;
@@ -16,7 +16,7 @@ public class CreatePersonalClientDto {
     private String firstName;
     private String lastName;
     private String residenceAddress;
-    private List<GenericAccount> accounts;
+    private List<GenericProduct> accounts;
     private String profile;
 
     //private short registrationStatus;

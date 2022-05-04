@@ -1,6 +1,6 @@
 package com.bootcamp.client.util.mapper;
 
-import com.bootcamp.client.general.entity.GenericAccount;
+import com.bootcamp.client.general.entity.GenericProduct;
 import com.bootcamp.client.personal.dto.*;
 import com.bootcamp.client.personal.entity.PersonalClient;
 import com.bootcamp.client.util.handler.exceptions.BadRequestException;
@@ -39,7 +39,7 @@ public class PersonalClientModelMapper {
 
     public PersonalClient reverseMapAddAccounts(PersonalClient p, CreatePersonalClientAccountDto o) {
 
-        GenericAccount acc = mapper.map(o, GenericAccount.class);
+        GenericProduct acc = mapper.map(o, GenericProduct.class);
 
         acc.setAccountInsertionDate(new Date());
         acc.setAccountRegistrationStatus((short) 1);

@@ -1,6 +1,6 @@
 package com.bootcamp.client.enterprise.entity;
 
-import com.bootcamp.client.general.entity.GenericAccount;
+import com.bootcamp.client.general.entity.GenericProduct;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,7 +21,7 @@ public class EnterpriseClient {
     private String ruc;
     private String companyName;
     private String legalResidence;
-    private List<GenericAccount> accounts;
+    private List<GenericProduct> accounts;
     private String profile;
 
     private short registrationStatus;

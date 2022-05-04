@@ -13,7 +13,7 @@ public class UpdatePersonalClientDto {
     private String firstName;
     private String lastName;
     private String residenceAddress;
-    /*private List<GenericAccount> accounts;*/
+    /*private List<GenericProduct> accounts;*/
     private String profile;
 
     /*private short registrationStatus;

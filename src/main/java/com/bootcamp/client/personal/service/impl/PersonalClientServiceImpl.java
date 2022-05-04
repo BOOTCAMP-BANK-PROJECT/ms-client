@@ -7,11 +7,15 @@ import com.bootcamp.client.personal.repository.PersonalClientRepository;
 import com.bootcamp.client.personal.service.PersonalClientService;
 import com.bootcamp.client.util.Util;
 import com.bootcamp.client.util.handler.exceptions.BadRequestException;
+import com.bootcamp.client.util.handler.exceptions.NotFoundException;
 import com.bootcamp.client.util.mapper.PersonalClientModelMapper;
+import com.bootcamp.client.util.web.WebClientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.math.BigDecimal;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +24,8 @@ public class PersonalClientServiceImpl implements PersonalClientService {
     static PersonalClientModelMapper modelMapper = PersonalClientModelMapper.singleInstance();
 
     public final PersonalClientRepository repository;
+
+    public final WebClientService webClient;
 
     @Override
     public Flux<PersonalClient> getAll() {
@@ -33,7 +39,45 @@ public class PersonalClientServiceImpl implements PersonalClientService {
 
     @Override
     public Mono<PersonalClient> getByDocumentNumber(String documentNumber) {
-        return repository.findByDocumentNumber(documentNumber);
+        return repository.findByDocumentNumber(documentNumber)
+                .switchIfEmpty(Mono.error(new BadRequestException(
+                        "ID",
+                        "An error occurred while trying to get an item.",
+                        "The personal client with document number "+documentNumber+" does not exists.",
+                        getClass(),
+                        "getByDocumentNumber.switchIfEmpty"
+                )))
+                .flatMap( client -> {
+
+                    return Flux.fromIterable(client.getAccounts())
+                            .flatMap( product -> {
+
+                                return webClient
+                                        .getWebClient("searching transactions for product with id "+product.getAccountId())
+                                        .get()
+                                        .uri("transactions/" + product.getAccountId() )
+                                        .retrieve()
+                                        .bodyToMono(BigDecimal.class)
+                                        .switchIfEmpty(Mono.error(new NotFoundException(
+                                                "ID",
+                                                "Account with id "+ product.getAccountId() +" does not have transactions.",
+                                                "An error occurred while trying to get personal client account information.",
+                                                getClass(),
+                                                "getByDocumentNumber.map.switchIfEmpty"
+                                        )))
+                                        .flatMap( balance -> {
+                                            System.out.println("acccccccccc");
+                                            product.setBalance(balance);
+                                            System.out.println(product);
+                                            return Mono.just(product);
+                                        })
+                                        .thenReturn(product);
+                            })
+                            .then(Mono.just(client));
+                } )
+                .onErrorResume( e -> Mono.error(e))
+                .cast(PersonalClient.class);
+
     }
 
     @Override

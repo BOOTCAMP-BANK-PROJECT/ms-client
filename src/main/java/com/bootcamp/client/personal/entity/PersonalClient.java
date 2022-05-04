@@ -1,6 +1,6 @@
 package com.bootcamp.client.personal.entity;
 
-import com.bootcamp.client.general.entity.GenericAccount;
+import com.bootcamp.client.general.entity.GenericProduct;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,7 +24,7 @@ public class PersonalClient {
     private String firstName;
     private String lastName;
     private String residenceAddress;
-    private List<GenericAccount> accounts;
+    private List<GenericProduct> accounts;
     private String profile;
 
     private short registrationStatus;

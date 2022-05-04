@@ -1,6 +1,6 @@
 package com.bootcamp.client.enterprise.dto;
 
-import com.bootcamp.client.general.entity.GenericAccount;
+import com.bootcamp.client.general.entity.GenericProduct;
 import lombok.Data;
 import java.util.List;
 
@@ -12,7 +12,7 @@ public class CreateEnterpriseClientDto {
     private String ruc;
     private String companyName;
     private String legalResidence;
-    private List<GenericAccount> accounts;
+    private List<GenericProduct> accounts;
     private String profile;
 
     //private short registrationStatus;
