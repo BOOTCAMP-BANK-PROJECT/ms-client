@@ -66,9 +66,7 @@ public class PersonalClientServiceImpl implements PersonalClientService {
                                                 "getByDocumentNumber.map.switchIfEmpty"
                                         )))
                                         .flatMap( balance -> {
-                                            System.out.println("acccccccccc");
                                             product.setBalance(balance);
-                                            System.out.println(product);
                                             return Mono.just(product);
                                         })
                                         .thenReturn(product);
