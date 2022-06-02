@@ -1,8 +1,8 @@
 package com.bootcamp.client.util.handler;
 
+import com.bootcamp.client.util.Util;
 import com.bootcamp.client.util.handler.exceptions.BadRequestException;
 import com.bootcamp.client.util.handler.exceptions.NotFoundException;
-import com.bootcamp.client.util.Util;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
